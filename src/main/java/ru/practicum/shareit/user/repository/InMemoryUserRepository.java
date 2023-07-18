@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.EmailBusyException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.User;
@@ -36,6 +37,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User updateUser(Long userId, UserDto userDto) {
         checkUserById(userId);
+        checkFreeEmail(userDto.getEmail());
         User updateUser = users.get(userId);
         updateUser.setName(userDto.getName());
         updateUser.setEmail(userDto.getEmail());
@@ -55,7 +57,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     private void checkFreeEmail(String email) {
         if (users.values().stream().anyMatch(user -> user.getEmail().equals(email))) {
-            throw new ValidationException("email уже используется");
+            throw new EmailBusyException("email уже используется");
         }
     }
 }

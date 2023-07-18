@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EmailBusyException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     private void checkFreeEmail(String email) {
         if (userRepository.getAllUsers().stream().anyMatch(user -> user.getEmail().equals(email))) {
-            throw new ValidationException("email уже используется");
+            throw new EmailBusyException("email уже используется");
         }
     }
 }
