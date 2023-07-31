@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -20,9 +21,9 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto unknownError(final Exception e) {
-        return new ErrorDto("Ой. Что-то сломалось");
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    public ErrorDto notImplementedException(final NotImplementedException e) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler
@@ -32,8 +33,14 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorDto emailException(final EmailBusyException e) {
         return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        return new ErrorDto("Unknown state: UNSUPPORTED_STATUS");
     }
 }
