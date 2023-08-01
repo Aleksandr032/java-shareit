@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final BookingMapper bookingMapper;
 
     @Transactional
     @Override
@@ -43,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new ValidationException("Предмет не доступен для бронирвоания");
         }
-        Booking booking = bookingMapper.toBooking(bookingDto);
+        Booking booking = BookingMapper.toBooking(bookingDto);
         booking.setItem(item);
         booking.setBooker(user);
         booking.setStatus(Status.WAITING);

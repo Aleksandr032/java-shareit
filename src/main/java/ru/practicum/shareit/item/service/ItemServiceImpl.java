@@ -35,8 +35,6 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private final BookingMapper bookingMapper;
-
 
     @Transactional
     @Override
@@ -155,7 +153,7 @@ public class ItemServiceImpl implements ItemService {
                 .findFirstByItemIdAndStatusAndStartBeforeOrderByEndDesc(itemDto.getId(), Status.APPROVED,
                         LocalDateTime.now());
         if (pastBookings != null) {
-            lastBooking = bookingMapper.toBookingByItemDto(pastBookings);
+            lastBooking = BookingMapper.toBookingByItemDto(pastBookings);
         }
         itemDto.setLastBooking(lastBooking);
         BookingDto nextBooking = null;
@@ -163,7 +161,7 @@ public class ItemServiceImpl implements ItemService {
                 .findFirstByItemIdAndStatusAndStartAfterOrderByStartAsc(itemDto.getId(), Status.APPROVED,
                         LocalDateTime.now());
         if (futureBooking != null) {
-            nextBooking = bookingMapper.toBookingByItemDto(futureBooking);
+            nextBooking = BookingMapper.toBookingByItemDto(futureBooking);
         }
         itemDto.setNextBooking(nextBooking);
     }
