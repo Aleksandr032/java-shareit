@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Status;
@@ -9,6 +10,7 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ErrorAccess;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -19,6 +21,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -35,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
@@ -42,6 +46,11 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id = " +
                 userId + " не найден"));
         Item item = ItemMapper.toItem(itemDto, user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос с id = " + itemDto.getRequestId() + " не найден"));
+            item.setItemRequest(itemRequest);
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -68,9 +77,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getItemsByOwnerId(Long userId) {
+    public List<ItemDto> getItemsByOwnerId(Long userId, Integer from, Integer size) {
         User owner = checkUserById(userId);
-        List<ItemDto> itemsForUser = itemRepository.getItemsByOwnerId(userId).stream()
+        PageRequest pageRequest = PageRequest.of(from, size);
+        List<ItemDto> itemsForUser = itemRepository.getItemsByOwnerId(userId, pageRequest).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
         for (ItemDto itemDto : itemsForUser) {
@@ -90,11 +100,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getItemsByTextOfQuery(String textOfQuery) {
+    public List<ItemDto> getItemsByTextOfQuery(String textOfQuery, Integer from, Integer size) {
         if (textOfQuery.isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.getItemsByTextOfQuery(textOfQuery)
+        PageRequest pageRequest = PageRequest.of(from, size);
+        return itemRepository.getItemsByTextOfQuery(textOfQuery, pageRequest)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -108,10 +119,10 @@ public class ItemServiceImpl implements ItemService {
         if (!updateItem.getOwner().getId().equals(user.getId())) {
             throw new ErrorAccess("Ошибка доступа. Только владелец может вносить изменения");
         }
-        if (itemDto.getName() != null) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             updateItem.setName(itemDto.getName());
         }
-        if (itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             updateItem.setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {

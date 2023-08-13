@@ -79,12 +79,6 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private void checkFreeEmail(String email) {
-        if (userRepository.findAll().stream().anyMatch(user -> user.getEmail().equals(email))) {
-            throw new EmailBusyException("email уже используется");
-        }
-    }
-
     private User checkUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь c id = " + userId + " не найден"));
