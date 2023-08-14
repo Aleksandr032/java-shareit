@@ -79,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsByOwnerId(Long userId, Integer from, Integer size) {
         User owner = checkUserById(userId);
-        PageRequest pageRequest = PageRequest.of(from, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         List<ItemDto> itemsForUser = itemRepository.getItemsByOwnerId(userId, pageRequest).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
         if (textOfQuery.isEmpty()) {
             return Collections.emptyList();
         }
-        PageRequest pageRequest = PageRequest.of(from, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         return itemRepository.getItemsByTextOfQuery(textOfQuery, pageRequest)
                 .stream()
                 .map(ItemMapper::toItemDto)

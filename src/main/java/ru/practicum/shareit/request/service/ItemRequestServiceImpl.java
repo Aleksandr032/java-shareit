@@ -63,7 +63,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemRequestDto> getAllItemRequests(Long userId, Integer from, Integer size) {
-        PageRequest pageRequest = PageRequest.of(from, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         return itemRequestRepository.findByRequesterIdNotOrderByCreatedDesc(userId, pageRequest).stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .map(this::addItemForRequestDto)

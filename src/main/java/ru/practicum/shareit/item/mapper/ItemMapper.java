@@ -11,7 +11,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .requestId(getRequestId(item))
+                .requestId((item.getItemRequest() != null) ? item.getItemRequest().getId() : null)
                 .build();
     }
 
@@ -23,12 +23,5 @@ public class ItemMapper {
                 .available(itemDto.getAvailable())
                 .owner(user)
                 .build();
-    }
-
-    private static Long getRequestId(Item item) {
-        if (item.getItemRequest() != null) {
-            return item.getItemRequest().getId();
-        }
-        return null;
     }
 }
