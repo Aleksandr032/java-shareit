@@ -12,9 +12,9 @@ public interface ItemService {
 
     void deleteItem(Long itemId);
 
-    List<ItemDto> getItemsByOwnerId(Long userId);
+    List<ItemDto> getItemsByOwnerId(Long userId, Integer from, Integer size);
 
-    List<ItemDto> getItemsByTextOfQuery(String textOfQuery);
+    List<ItemDto> getItemsByTextOfQuery(String textOfQuery, Integer from, Integer size);
 
     ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId);
 
