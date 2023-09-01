@@ -19,6 +19,7 @@ public class BookingDto {
     private Long bookerId;
     private UserDto booker;
     private Status status;
+
     private boolean isEndAfterStart() {
         return start == null || end == null || end.isAfter(start);
     }
