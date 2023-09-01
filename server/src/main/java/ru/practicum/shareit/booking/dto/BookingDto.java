@@ -14,14 +14,12 @@ public class BookingDto {
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
-
-    private boolean isEndAfterStart() {
-        return start == null || end == null || end.isAfter(start);
-    }
-
     private ItemDto item;
     private Long itemId;
     private Long bookerId;
     private UserDto booker;
     private Status status;
+    private boolean isEndAfterStart() {
+        return start == null || end == null || end.isAfter(start);
+    }
 }

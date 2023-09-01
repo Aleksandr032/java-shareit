@@ -13,21 +13,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+    private static final String USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto addBooking(@RequestHeader(USER_ID) Long userId,
                                  @RequestBody BookingDto bookingDto) {
         return bookingService.addBooking(userId, bookingDto);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto getBookingById(@RequestHeader(USER_ID) Long userId,
                                      @PathVariable Long bookingId) {
         return bookingService.getBookingById(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingDto> getBookingsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingDto> getBookingsByUserId(@RequestHeader(USER_ID) Long userId,
                                                 @RequestParam(required = false, defaultValue = "ALL") State state,
                                                 @RequestParam(required = false, defaultValue = "0") Integer from,
                                                 @RequestParam(required = false, defaultValue = "10") Integer size) {
@@ -35,7 +36,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getBookingsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long ownerId,
+    public List<BookingDto> getBookingsByOwnerId(@RequestHeader(USER_ID) Long ownerId,
                                                  @RequestParam(required = false, defaultValue = "ALL") State state,
                                                  @RequestParam(required = false, defaultValue = "0") Integer from,
                                                  @RequestParam(required = false, defaultValue = "10") Integer size) {
@@ -44,7 +45,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingDto approveBooking(@PathVariable("bookingId") Long bookingId,
-                                     @RequestHeader("X-Sharer-User-Id") Long ownerId,
+                                     @RequestHeader(USER_ID) Long ownerId,
                                      @RequestParam(required = false) Boolean approved) {
         return bookingService.approveBooking(bookingId, ownerId, approved);
     }
